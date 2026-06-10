@@ -2,32 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auditoria;
+use App\Http\Requests\Admin\DateRangeRequest;
+use App\Services\Admin\AuditService;
 use Illuminate\Http\Request;
 
 class AuditoriaController extends Controller
 {
-    public function indexWeb()
+    public function indexWeb(DateRangeRequest $request, AuditService $auditService)
     {
-        $auditorias = Auditoria::with('user')->orderBy('created_at', 'desc')->paginate(50);
-        return view('admin.auditoria.index', compact('auditorias'));
+        return view('admin.auditoria.index', [
+            'auditorias' => $auditService->paginate($request->validated()),
+            'filters' => $auditService->defaultFilters(),
+            'users' => $auditService->users(),
+        ]);
     }
 
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request, AuditService $auditService)
     {
-        $query = Auditoria::with('user');
-
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->has('fecha')) {
-            $query->whereDate('created_at', $request->fecha);
-        }
-
-        return response()->json($query->orderBy('created_at', 'desc')->paginate(30));
+        return response()->json($auditService->paginate($request->all()));
     }
 }

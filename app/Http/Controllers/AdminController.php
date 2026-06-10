@@ -2,67 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\DateRangeRequest;
+use App\Http\Requests\Admin\SearchRequest;
 use App\Models\Inscripcion;
-use App\Models\Pago;
-use App\Models\Curso;
-use App\Models\Aspirante;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Services\Admin\DashboardService;
+use App\Services\Admin\SearchService;
+use App\Services\Admin\StatisticsService;
 
 class AdminController extends Controller
 {
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function dashboard()
+    public function dashboard(DateRangeRequest $request, DashboardService $dashboardService)
     {
-        $kpis = [
-            'total_inscritos' => Inscripcion::count(),
-            'inscritos_aprobados' => Inscripcion::where('estado', 'aprobado')->count(),
-            'pagos_pendientes' => Pago::where('estado', 'en_revision')->count(),
-            'cupos_totales' => Curso::sum('cupos_disponibles'),
-        ];
-
-        $inscripciones_por_estado = Inscripcion::select('estado', DB::raw('count(*) as total'))
-            ->groupBy('estado')
-            ->get();
-
-        $ultimas_inscripciones = Inscripcion::with(['aspirante', 'curso'])
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        return response()->json([
-            'kpis' => $kpis,
-            'grafico_estados' => $inscripciones_por_estado,
-            'ultimas_inscripciones' => $ultimas_inscripciones,
-        ]);
+        return response()->json($dashboardService->build($request->validated()));
     }
 
-    public function dashboardView()
+    public function dashboardView(DashboardService $dashboardService)
     {
-        $ultimas_inscripciones = Inscripcion::with(['aspirante', 'curso'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
 
-        $ultimos_aspirantes = Aspirante::orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        $kpis = [
-            'total_aspirantes' => Aspirante::count(),
-            'total_cursos' => Curso::count(),
-            'inscripciones_pendientes' => Inscripcion::where('estado', 'pendiente')->count(),
-            'inscripciones_aprobadas' => Inscripcion::where('estado', 'aprobado')->count(),
-        ];
-
-        return view('admin.dashboard', compact('ultimas_inscripciones', 'ultimos_aspirantes', 'kpis'));
+        return view('admin.dashboard', $dashboardService->build([]));
     }
 
     public function aspirantesList()
     {
-        $aspirantes = Aspirante::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        $aspirantes = \App\Models\Aspirante::with('user')->latest()->paginate(15);
+
         return view('admin.aspirantes.index', compact('aspirantes'));
+    }
+
+    public function statisticsView()
+    {
+        return view('admin.estadisticas.index');
+    }
+
+    public function statisticsData(DateRangeRequest $request, StatisticsService $statisticsService)
+    {
+        return response()->json($statisticsService->payload($request->validated()));
+    }
+
+    public function advancedSearchView(SearchRequest $request, SearchService $searchService)
+    {
+        return view('admin.aspirantes.search', [
+            'searchFields' => $searchService->availableFields(),
+            'searchOperators' => $searchService->availableOperators(),
+            'results' => $searchService->search($request->validated()),
+        ]);
+    }
+
+    public function advancedSearchData(SearchRequest $request, SearchService $searchService)
+    {
+        return response()->json($searchService->search($request->validated()));
     }
 }
