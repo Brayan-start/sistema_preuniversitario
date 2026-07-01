@@ -25,7 +25,15 @@ class AspiranteController extends Controller
     {
         $user = auth()->user();
         $aspirante = $user->aspirante;
-        
+
+        if (!$aspirante) {
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            return redirect()->route('login')
+                ->withErrors(['error' => 'Tu cuenta ha sido desactivada. Por favor comunícate con el administrador.']);
+        }
+
         $inscripcion = Inscripcion::with(['documentos', 'pago', 'curso'])
             ->where('aspirante_id', $aspirante->id)
             ->first();

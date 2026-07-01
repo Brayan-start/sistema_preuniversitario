@@ -17,6 +17,14 @@ class RoleMiddleware
             return redirect()->route('login')->withErrors(['error' => 'No tiene permisos para acceder a esta página.']);
         }
 
+        if ($role === 'aspirante' && !$request->user()->aspirante) {
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            return redirect()->route('login')
+                ->withErrors(['error' => 'Tu cuenta ha sido desactivada. Por favor comunícate con el administrador.']);
+        }
+
         return $next($request);
     }
 }
