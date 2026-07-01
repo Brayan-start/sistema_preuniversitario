@@ -10,6 +10,12 @@ if grep -q "APP_KEY=$" .env 2>/dev/null || [ -z "$APP_KEY" ]; then
     echo "✓ APP_KEY generated"
 fi
 
+# Clear old cache before caching
+chmod -R 775 storage bootstrap/cache
+php artisan cache:clear --no-interaction 2>&1 || echo "⚠ cache:clear skipped"
+php artisan config:clear --no-interaction 2>&1 || echo "⚠ config:clear skipped"
+php artisan view:clear --no-interaction 2>&1 || echo "⚠ view:clear skipped"
+
 # Cache Laravel config, routes, and views
 php artisan config:cache --no-interaction 2>&1 || echo "⚠ config:cache skipped (may be expected)"
 php artisan route:cache --no-interaction 2>&1 || echo "⚠ route:cache skipped"
