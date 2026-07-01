@@ -132,6 +132,11 @@ class AuthController extends Controller
 
         $user = auth()->user();
 
+        if ($user->role === 'aspirante' && !$user->aspirante) {
+            auth()->logout();
+            return response()->json(['error' => 'Credenciales inválidas'], 401);
+        }
+
         if (!$user->is_active) {
             return response()->json(['error' => 'Usuario desactivado'], 403);
         }

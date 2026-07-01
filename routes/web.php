@@ -40,6 +40,11 @@ Route::post('/login', function (Request $request) {
         $request->session()->regenerate();
         $user = Auth::user();
 
+        if ($user->role === 'aspirante' && !$user->aspirante) {
+            Auth::logout();
+            return back()->withErrors(['email' => 'Credenciales incorrectas']);
+        }
+
         if (!$user->is_active) {
             Auth::logout();
             return back()->withErrors(['email' => 'Usuario desactivado']);
