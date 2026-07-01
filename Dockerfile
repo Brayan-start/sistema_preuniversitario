@@ -26,7 +26,11 @@ RUN echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/memory.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN APP_URL=http://localhost composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN chmod -R 777 /var/www/html/storage \
+RUN mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/logs \
+    && chmod -R 777 /var/www/html/storage \
     && chmod -R 777 /var/www/html/bootstrap/cache
 
 COPY nginx.conf /etc/nginx/sites-enabled/default.conf
