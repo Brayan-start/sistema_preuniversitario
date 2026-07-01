@@ -9,7 +9,8 @@ mkdir -p storage/framework/views
 mkdir -p storage/framework/cache
 mkdir -p storage/framework/sessions
 mkdir -p storage/logs
-chmod -R 775 storage bootstrap/cache
+chmod -R 777 storage
+chmod -R 777 bootstrap/cache
 
 # Generate app key if not set
 if grep -q "APP_KEY=$" .env 2>/dev/null || [ -z "$APP_KEY" ]; then
