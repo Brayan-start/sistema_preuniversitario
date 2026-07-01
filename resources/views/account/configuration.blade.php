@@ -2,7 +2,7 @@
 
 @section('content')
 @php
-    $photoUrl = $user->profile_photo_path ? asset('storage/'.$user->profile_photo_path) : null;
+    $photoUrl = $user->profile_photo_path ?? null;
 @endphp
 
 <div class="row justify-content-center">

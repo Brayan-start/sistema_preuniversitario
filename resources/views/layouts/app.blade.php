@@ -656,7 +656,7 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 <span class="me-2 d-none d-md-block fw-medium">{{ auth()->user()->name }}</span>
                                 @if(auth()->user()->profile_photo_path)
-                                    <img src="{{ asset('storage/'.auth()->user()->profile_photo_path) }}" alt="Foto de perfil" class="user-profile">
+                                    <img src="{{ auth()->user()->profile_photo_path }}" alt="Foto de perfil" class="user-profile">
                                 @else
                                     <div class="user-profile bg-secondary text-white d-flex align-items-center justify-content-center">
                                         {{ substr(auth()->user()->name, 0, 1) }}

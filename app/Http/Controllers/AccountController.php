@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Auditoria;
 use App\Models\Inscripcion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class AccountController extends Controller
 {
@@ -87,11 +87,10 @@ class AccountController extends Controller
         }
 
         if ($request->hasFile('profile_photo')) {
-            if ($user->profile_photo_path) {
-                Storage::disk('public')->delete($user->profile_photo_path);
-            }
-
-            $data['profile_photo_path'] = $request->file('profile_photo')->store('profile-photos', 'public');
+            $upload = Cloudinary::upload($request->file('profile_photo')->getRealPath(), [
+                'folder' => 'perfiles',
+            ]);
+            $data['profile_photo_path'] = $upload->getSecurePath();
         }
 
         $user->update($data);

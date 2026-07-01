@@ -2,7 +2,7 @@
 
 @section('content')
 @php
-    $photoUrl = $user->profile_photo_path ? asset('storage/'.$user->profile_photo_path) : null;
+    $photoUrl = $user->profile_photo_path ?? null;
     $profileName = $aspirante?->nombre_completo ?? $user->name;
     $profileRole = $user->isAspirante() ? 'Aspirante' : ucfirst($user->role);
 @endphp
