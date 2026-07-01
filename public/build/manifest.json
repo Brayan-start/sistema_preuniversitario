@@ -1,0 +1,47 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app--VosL-w8.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/admin/audit.js": {
+    "file": "assets/audit-CEyYtKy0.js",
+    "name": "audit",
+    "src": "resources/js/admin/audit.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/admin/dashboard.js": {
+    "file": "assets/dashboard-BOIqZ-np.js",
+    "name": "dashboard",
+    "src": "resources/js/admin/dashboard.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/admin/search.js": {
+    "file": "assets/search-DFuSPoyA.js",
+    "name": "search",
+    "src": "resources/js/admin/search.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/admin/statistics.js": {
+    "file": "assets/statistics-mZeOc-uX.js",
+    "name": "statistics",
+    "src": "resources/js/admin/statistics.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DC-Zdy6P.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/admin/dashboard.js",
+      "resources/js/admin/statistics.js",
+      "resources/js/admin/audit.js",
+      "resources/js/admin/search.js"
+    ]
+  }
+}

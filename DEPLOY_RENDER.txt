@@ -1,0 +1,11 @@
+=====================================
+SISTEMA PREUNIVERSITARIO
+=====================================
+
+Repositorio GitHub:
+https://github.com/Brayan-start/sistema_preuniversitario.git
+
+Aplicación desplegada en Render:
+https://sistema-preuniversitario.onrender.com
+
+Para ejecutar el proyecto localmente, consultar el archivo README.md.

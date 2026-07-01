@@ -1,0 +1,1 @@
+const e=()=>{const a=document.querySelector("[data-admin-search-table]");a&&window.DataTable&&new window.DataTable(a,{pageLength:20,ordering:!1,language:{url:"https://cdn.datatables.net/plug-ins/2.1.8/i18n/es-ES.json"}})};e();
