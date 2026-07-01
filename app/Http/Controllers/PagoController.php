@@ -7,12 +7,11 @@ use App\Models\Inscripcion;
 use App\Models\Auditoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use App\Mail\PagoAprobado;
 use App\Mail\PagoRechazado;
 use App\Mail\PagoRecibidoMail;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Services\NotificationEmailService;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class PagoController extends Controller
 {
@@ -23,7 +22,7 @@ class PagoController extends Controller
         $this->emailService = $emailService;
     }
 
-    public function showComprobante(Pago $pago): StreamedResponse
+    public function showComprobante(Pago $pago)
     {
         $user = auth()->user();
         $pago->load('inscripcion');
@@ -32,9 +31,13 @@ class PagoController extends Controller
             abort(403);
         }
 
-        abort_unless(Storage::exists($pago->comprobante_path), 404);
+        $url = $pago->comprobante_path;
 
-        return Storage::download($pago->comprobante_path);
+        if (empty($url)) {
+            abort(404, 'El comprobante no está disponible.');
+        }
+
+        return redirect()->away($url);
     }
 
     public function index(Request $request)
@@ -102,7 +105,10 @@ class PagoController extends Controller
             return response()->json(['error' => 'Ya has registrado un pago para esta inscripción.'], 400);
         }
 
-        $path = $request->file('comprobante')->store('private/pagos');
+        $upload = Cloudinary::upload($request->file('comprobante')->getRealPath(), [
+            'folder' => 'pagos',
+        ]);
+        $path = $upload->getSecurePath();
 
         $pago = Pago::create([
             'inscripcion_id' => $inscripcion->id,
@@ -150,7 +156,10 @@ class PagoController extends Controller
             return back()->with('error', 'Ya has registrado un pago para esta inscripción.');
         }
 
-        $path = $request->file('comprobante')->store('private/pagos');
+        $upload = Cloudinary::upload($request->file('comprobante')->getRealPath(), [
+            'folder' => 'pagos',
+        ]);
+        $path = $upload->getSecurePath();
 
         $pago = Pago::create([
             'inscripcion_id' => $inscripcion->id,

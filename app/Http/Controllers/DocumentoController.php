@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\DocumentosObservados;
 use App\Services\NotificationEmailService;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class DocumentoController extends Controller
 {
@@ -27,19 +28,13 @@ class DocumentoController extends Controller
             abort(403);
         }
 
-        $path = $documento->archivo_path;
+        $url = $documento->archivo_path;
 
-        if (empty($path) || $path === '0') {
+        if (empty($url) || $url === '0') {
             abort(404, 'El archivo no está disponible.');
         }
 
-        $fullPath = storage_path('app/' . $path);
-
-        if (!file_exists($fullPath)) {
-            abort(404, 'El archivo no está disponible.');
-        }
-
-        return response()->file($fullPath);
+        return redirect()->away($url);
     }
 
     /**
@@ -68,17 +63,13 @@ class DocumentoController extends Controller
 
         $tipos = ['ci', 'certificado_bachillerato', 'fotografia'];
         $documentos = [];
-        $directory = storage_path('app/documentos');
-        
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-        
+
         foreach ($tipos as $tipo) {
             $file = $request->file($tipo);
-            $filename = $file->hashName();
-            $file->move($directory, $filename);
-            $path = 'documentos/' . $filename;
+            $upload = Cloudinary::upload($file->getRealPath(), [
+                'folder' => 'documentos',
+            ]);
+            $path = $upload->getSecurePath();
 
             $doc = Documento::create([
                 'aspirante_id' => $aspirante->id,
@@ -125,18 +116,14 @@ class DocumentoController extends Controller
         }
 
         $tipos = ['ci', 'certificado_bachillerato', 'fotografia'];
-        $directory = storage_path('app/documentos');
-        
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-        
+
         foreach ($tipos as $tipo) {
             $file = $request->file($tipo);
-            $filename = $file->hashName();
-            $file->move($directory, $filename);
-            $path = 'documentos/' . $filename;
-            
+            $upload = Cloudinary::upload($file->getRealPath(), [
+                'folder' => 'documentos',
+            ]);
+            $path = $upload->getSecurePath();
+
             Documento::create([
                 'aspirante_id' => $aspirante->id,
                 'inscripcion_id' => $inscripcion->id,
